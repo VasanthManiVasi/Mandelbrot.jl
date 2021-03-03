@@ -1,7 +1,7 @@
 module Mandelbrot
-export mandelbrot_image, mandelbrot, scale, minmax_scale
+export mandelbrot_image, mandelbrot
 
-using Base.Threads, Distributed
+using Base.Threads
 
 function mandelbrot(c::Complex, max_iter::Int)
     z = 0.0 + 0.0im
@@ -15,14 +15,14 @@ function mandelbrot(c::Complex, max_iter::Int)
 end
 
 function mandelbrot_image(width, height, max_iter = 1000; rmin = -2, rmax = 1, imin = -1, imax = 1)
-    @time A = [
+    A = [
         Complex((j/width * (rmax - rmin) + rmin), (i/height * (imax - imin) + imin))
         for i in 1:height, j in 1:width
     ]
 
     set = Array{Int}(undef, height, width)
 
-    @inbounds @threads for i in 1:height
+    @time @inbounds @threads for i in 1:height
         for j in 1:width
             set[i, j] = mandelbrot(A[i, j], max_iter)
         end
